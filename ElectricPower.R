@@ -1,42 +1,87 @@
-fh <- file("household_power_consumption.txt")
-ba <- read.table(text = grep("^[1,2]/2/2007", readLines(fh), value = TRUE), col.names = c("Date", "Time", "Global_active_power", "Global_reactive_power", "Voltage", "Global_intensity", "Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), sep = ";", header = TRUE)
 
-# Generating Plot 1
-hist(ba$Global_active_power, col = "red", main = paste("Global Active Power"), xlab = "Global Active Power (kilowatts)")
-## Getting full dataset
-data_full <- read.csv("household_power_consumption.txt", header = T, sep = ';', 
-                      na.strings = "?", nrows = 2075259, check.names = F, 
-                      stringsAsFactors = F, comment.char = "", quote = '\"')
-data_full$Date <- as.Date(data_full$Date, format = "%d/%m/%Y")
+#plot1
+df <- read.table("household_power_consumption.txt", skip = 66637, nrow = 2880, sep = ";")
+name <- sapply(read.table("household_power_consumption.txt", nrow = 1, sep = ";"), as.character)
+names(df) <- name
+df$DateTime <- strptime(paste(df$Date, df$Time), format="%d/%m/%Y %H:%M:%S")
+for( i in 3:9 ){
+    df[[i]] <- sapply(df[[i]], as.character)
+    df[[i]] <- sapply(df[[i]], as.numeric)
+}
+win.graph(200,200)
+hist(df$Global_active_power, xlab = "Global Active Power (kilowatts)", main = "Global Active Power", col = "red", ylim = c(0, 1200))
+axis(1, at=c(min(d$DateTime), min(d$DateTime)+86400,  min(d$DateTime)+2*86400),
+labels=c("Thu", "Fri", "Sat"))  
+  
+  #plot2
+  
+  df <- read.table("household_power_consumption.txt", skip = 66637, nrow = 2880, sep = ";")
+name <- sapply(read.table("household_power_consumption.txt", nrow = 1, sep = ";"), as.character)
+names(df) <- name
+df$DateTime <- strptime(paste(df$Date, df$Time), format="%d/%m/%Y %H:%M:%S")
+for( i in 3:9 ){
+    df[[i]] <- sapply(df[[i]], as.character)
+    df[[i]] <- sapply(df[[i]], as.numeric)
+}
+win.graph(200,200)
+with(df, plot(DateTime, Global_active_power, type = "n", xlab = "daytime", ylab = "Global Active Power (kilowatts)" , axes = F, frame.plot=TRUE))
+axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400
+             , as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+axis(2, yaxs = "r")
+with(df, points(DateTime, Global_active_power, type = "l"))
 
-## Subsetting the data
-data <- subset(data_full, subset = (Date >= "2007-02-01" & Date <= "2007-02-02"))
-rm(data_full)
+#plot 3
 
-## Converting dates
-datetime <- paste(as.Date(data$Date), data$Time)
-data$Datetime <- as.POSIXct(datetime)
+df <- read.table("household_power_consumption.txt", skip = 66637, nrow = 2880, sep = ";")
+name <- sapply(read.table("household_power_consumption.txt", nrow = 1, sep = ";"), as.character)
+names(df) <- name
+df$DateTime <- strptime(paste(df$Date, df$Time), format="%d/%m/%Y %H:%M:%S")
+for( i in 3:9 ){
+    df[[i]] <- sapply(df[[i]], as.character)
+    df[[i]] <- sapply(df[[i]], as.numeric)
+}
+win.graph(200,200)
+with(df, plot(DateTime, Sub_metering_1, type = "n", xlab = "daytime", ylab = "Energy sub metering" , axes = F, frame.plot=TRUE))
+axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400
+             , as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+axis(2, yaxs = "r")
+with(df, points(DateTime, Sub_metering_1, type = "l"))
+with(df, points(DateTime, Sub_metering_2, type = "l", col = "red"))
+with(df, points(DateTime, Sub_metering_3, type = "l", col = "blue"))
+legend("topright", pch = "¢w", col = c("black", "red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
 
-## Generating Plot 2
-plot(data$Global_active_power ~ data$Datetime, type = "l",
-     ylab = "Global Active Power (kilowatts)", xlab = "")
+#plot 4
 
-## Generating Plot 3
-with(data, {
-  plot(Sub_metering_1 ~ Datetime, type = "l", 
-       ylab = "Global Active Power (kilowatts)", xlab = "")
-  lines(Sub_metering_2 ~ Datetime, col = 'Red')
-  lines(Sub_metering_3 ~ Datetime, col = 'Blue')
-})
-legend("topright", col = c("black", "red", "blue"), lty = 1, lwd = 2, 
-       legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
-
-## Generating Plot 3
-with(data, {
-  plot(Sub_metering_1 ~ Datetime, type = "l", 
-       ylab = "Global Active Power (kilowatts)", xlab = "")
-  lines(Sub_metering_2 ~ Datetime, col = 'Red')
-  lines(Sub_metering_3 ~ Datetime, col = 'Blue')
-})
-legend("topright", col = c("black", "red", "blue"), lty = 1, lwd = 2, 
-       legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+df <- read.table("household_power_consumption.txt", skip = 66637, nrow = 2880, sep = ";")
+name <- sapply(read.table("household_power_consumption.txt", nrow = 1, sep = ";"), as.character)
+names(df) <- name
+df$DateTime <- strptime(paste(df$Date, df$Time), format="%d/%m/%Y %H:%M:%S")
+for( i in 3:9 ){
+    df[[i]] <- sapply(df[[i]], as.character)
+    df[[i]] <- sapply(df[[i]], as.numeric)
+}
+win.graph(200,200)
+par(mfcol = c(2,2))
+with(df, {plot(DateTime, Global_active_power, type = "n", xlab = "daytime", ylab = "Global Active Power (kilowatts)" , axes = F, frame.plot=TRUE)
+          axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400, as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+          axis(2, yaxs = "r")
+          with(df, points(DateTime, Global_active_power, type = "l"))
+          plot(DateTime, Sub_metering_1, type = "n", xlab = "daytime", ylab = "Energy sub metering" , axes = F, frame.plot=TRUE)
+          axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400
+                       , as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+          axis(2, yaxs = "r")
+          with(df, points(DateTime, Sub_metering_1, type = "l"))
+          with(df, points(DateTime, Sub_metering_2, type = "l", col = "red"))
+          with(df, points(DateTime, Sub_metering_3, type = "l", col = "blue"))
+          legend("topright", pch = "¢w", col = c("black", "red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))          
+          plot(DateTime, Voltage, type = "n", xlab = "daytime", ylab = "Voltage (volts)" , axes = F, frame.plot=TRUE)
+          axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400
+             , as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+          axis(2, yaxs = "r")
+          with(df, points(DateTime, Voltage, type = "l"))
+          plot(DateTime, Global_reactive_power, type = "n", xlab = "daytime", ylab = "Global Reactive Power (kilowatts)" , axes = F, frame.plot=TRUE)
+          axis(1, at=c(as.numeric(min(df$DateTime)), as.numeric(min(df$DateTime))+86400
+             , as.numeric(min(df$DateTime))+2*86400), labels=c("Thu", "Fri", "Sat"))
+          axis(2, yaxs = "r")
+          with(df, points(DateTime, Global_reactive_power, type = "l"))
+          })
